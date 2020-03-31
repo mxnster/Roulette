@@ -71,8 +71,7 @@ Array.from(selectedAmountButtons).forEach((selectedAmountButton) => {
 //сброс всех выбранных ставок
 const resetButton = document.getElementById('reset');
 const resetSelections = function () {
-    isBetSelected = false;
-    isAmountSelected = false;
+    
     Array.from(selectedAmountButtons).forEach((selectedAmountButton) => {
         if (selectedAmountButton.hasAttribute('class', 'selected')) {
             selectedAmountButton.classList.remove('select');
@@ -86,6 +85,8 @@ const resetSelections = function () {
     betAmountHolder.innerText = `Bet amount `;
     selectedAmount = 0;
     selectedBet = null;
+    isBetSelected = false;
+    isAmountSelected = false;
 }
 resetButton.addEventListener('click', function () {
     resetSelections();
@@ -105,7 +106,6 @@ const getRollNumber = function () {
         buttonRoll.removeAttribute("disabled");
         n = Number(rollNumber.innerText);
         console.log(n);
-        resetSelections();
     }, 2000);
 }
 
@@ -123,14 +123,16 @@ let n = Number(rollNumber.innerText);
 buttonRoll.addEventListener('click', function (e) {
     if (isAmountSelected == false || isBetSelected == false) {
         getRollNumber();
+        resetSelections();
     }
     if (isAmountSelected == true && isBetSelected == true && Number(selectedAmount) <= balance) {
         balance -= selectedAmount;
         balancePanel.innerText = `Balance = ${balance}`;
         history.innerText = ``;
         getRollNumber();
-        setTimeout(() => {
 
+        setTimeout(() => {
+            let n = Number(rollNumber.innerText);
             if (selectedBet == n) {
                 balance += selectedAmount * 35;
                 history.innerText = `You have won ${selectedAmount * 34}`
@@ -172,15 +174,7 @@ buttonRoll.addEventListener('click', function (e) {
                 history.innerText = `You have won ${selectedAmount * 2}`
             }
             if (selectedBet == '2to1') {
-                if (selectedBet.parentNode.rowIndex === 0 && selectedBet.parentNode.innerText.includes(n)) {
-                    balance += selectedAmount * 3;
-                    history.innerText = `You have won ${selectedAmount * 2}`
-                }
-                if (selectedBet.parentNode.rowIndex === 1 && selectedBet.parentNode.innerText.includes(n)) {
-                    balance += selectedAmount * 3;
-                    history.innerText = `You have won ${selectedAmount * 2}`
-                }
-                if (selectedBet.parentNode.rowIndex === 2 && selectedBet.parentNode.innerText.includes(n)) {
+                if (selectedBet.parentNode.rowIndex == 0 && selectedBet.parentNode.innerText.includes(n)) {
                     balance += selectedAmount * 3;
                     history.innerText = `You have won ${selectedAmount * 2}`
                 }
@@ -189,8 +183,8 @@ buttonRoll.addEventListener('click', function (e) {
                 history.innerText = ``;
             }
             balancePanel.innerText = `Balance = ${balance}`;
-            
-        }, 2010)
+            resetSelections();
+        }, 2050)
     }
     else if (Number(selectedAmount) > balance) {
         alert('You dont have enough coins');
